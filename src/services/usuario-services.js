@@ -1,23 +1,10 @@
 import UsuarioModel from "../models/usuario-model.js";
 import { hash } from "bcrypt";
+import usuarioRotas from "../routes/rotas-usuario.js";
 
 // Classe para veificar os dados e comunicar com o MongoDB
 export default class UsuarioServices {
-    async retornarUsuarioPorId(idUsuario) {
-        // Retorna o usuário do MongoDB
-        const data = await UsuarioModel.findOne({ idUsuario }).lean();
-
-        // Se usuário não existir, retornar 'null' (vazio)
-        if (!data) {
-            return null;
-        }
-        // Se ele existir, retorna o usuário excluindo seu '_id', '__v' e sua senha
-        else {
-            const { _id, __v, senha, ...usuario } = data;
-            return usuario;
-        }
-    }
-
+    // Função para criar usuário
     async criarUsuario(infoUsuario) {
         // Criptografia da senha para segurança
         const senhaCriptografada = await hash(infoUsuario.senha, 12);
@@ -29,5 +16,47 @@ export default class UsuarioServices {
             await UsuarioModel.create(novaInfoUsuario)
         ).toObject();
         return usuario;
+    }
+
+    // Função para retornar usuário por email
+    async retornarUsuarioPorEmail(email) {
+        // Busca o usuário pelo email
+        const usuario = await UsuarioModel.findOne({email}).lean();
+        // Se o usuário não existir, retorna null
+        if (!usuario) {
+            return null;
+        }
+
+        // Omite informações importantes
+        const {_id, __v, senha, ...usuarioRetornado} = usuario;
+        return usuarioRetornado;
+    }
+
+    // Função para atualizar usuário
+    async atualizarUsuario(email, novaInfo) {
+        // Busca o usuário pelo email e atualiza se achar
+        const novoUsuario = await UsuarioModel.findOneAndUpdate({email}, novaInfo, {new: true}).lean();
+        // Se o usuário não existir, retorna null
+        if (!novoUsuario) {
+            return null
+        }
+
+        // Omite informações importantes
+        const {_id, __v, senha, ...usuarioRetornado} = novoUsuario;
+        return usuarioRetornado;
+    }
+
+    // Função para deletar usuário
+    async deletarUsuario (email) {
+        // Busca o usuário pelo email e deleta se achar
+        const usuarioDeletado = await UsuarioModel.findOneAndDelete({email}).lean();
+        // Se o usuário não existir, retorna null
+        if (!usuarioDeletado) {
+            return null
+        }
+
+        // Omite informações importantes
+        const {_id, __v, senha, ...usuarioRetornado} = usuarioDeletado;
+        return usuarioRetornado;
     }
 }

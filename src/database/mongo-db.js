@@ -1,11 +1,12 @@
 import { connect } from "mongoose";
 
 export default async function conectarMongoDB () {
+    const MONGO_URI = process.env.MONGO_URI;
     try {
-        await connect(process.env.MONGO_URI);
+        await connect(MONGO_URI);
         console.log("Conexão com o MongoDB realizada com sucesso.");
-    } catch (err) {
-        console.error("Erro ao conectar com o MongoDB.");
+    } catch (erro) {
+        console.error("Erro ao conectar com o MongoDB: ", erro);
         process.exit(1);
     }
 }
