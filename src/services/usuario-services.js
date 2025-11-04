@@ -19,9 +19,9 @@ export default class UsuarioServices {
     }
 
     // Função para retornar usuário por email
-    async retornarUsuarioPorEmail(email) {
+    async retornarUsuarioPorId(idUsuario) {
         // Busca o usuário pelo email
-        const usuario = await UsuarioModel.findOne({email}).lean();
+        const usuario = await UsuarioModel.findOne({idUsuario}).lean();
         // Se o usuário não existir, retorna null
         if (!usuario) {
             return null;
@@ -33,9 +33,9 @@ export default class UsuarioServices {
     }
 
     // Função para atualizar usuário
-    async atualizarUsuario(email, novaInfo) {
+    async atualizarUsuario(idUsuario, novaInfo) {
         // Busca o usuário pelo email e atualiza se achar
-        const novoUsuario = await UsuarioModel.findOneAndUpdate({email}, novaInfo, {new: true}).lean();
+        const novoUsuario = await UsuarioModel.findOneAndUpdate({idUsuario}, novaInfo, {new: true}).lean();
         // Se o usuário não existir, retorna null
         if (!novoUsuario) {
             return null
@@ -47,9 +47,9 @@ export default class UsuarioServices {
     }
 
     // Função para deletar usuário
-    async deletarUsuario (email) {
-        // Busca o usuário pelo email e deleta se achar
-        const usuarioDeletado = await UsuarioModel.findOneAndDelete({email}).lean();
+    async deletarUsuario (idUsuario) {
+        // Busca o usuário pelo ID e deleta se achar
+        const usuarioDeletado = await UsuarioModel.findOneAndDelete({idUsuario}).lean();
         // Se o usuário não existir, retorna null
         if (!usuarioDeletado) {
             return null

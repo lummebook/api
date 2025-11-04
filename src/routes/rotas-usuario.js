@@ -15,16 +15,16 @@ usuarioRotas.post("/", async (req, res) => {
     } 
     // Caso um erro aconteça, cai no catch
     catch (erro) {
-        // Retorna vazio caso um erro aconteça
-        return res.status(500).json(null);
+        // Retorna o erro caso aconteça
+        return res.status(500).json(erro.message);
     }
 });
 
-// Rota para retornar um usuário por email
+// Rota para retornar um usuário por ID
 usuarioRotas.get("/", async (req, res) => {
     try {
-        // Procura o usuário pelo email
-        const usuarioRetornado = await usuarioServices.retornarUsuarioPorEmail(req.body.data);
+        // Procura o usuário pelo ID
+        const usuarioRetornado = await usuarioServices.retornarUsuarioPorId(req.body.idUsuario);
         // Se não for encontrado, retorna null
         if (!usuarioRetornado) {
             return res.status(404).json(null);
@@ -34,16 +34,16 @@ usuarioRotas.get("/", async (req, res) => {
         return res.status(200).json(usuarioRetornado);
     }
     catch (erro) {
-        // Retorna vazio caso um erro aconteça
-        return res.status(500).json(null);
+        // Retorna o erro caso aconteça
+        return res.status(500).json(erro.message);
     }
 });
 
 // Rota para atualizar um usuário
 usuarioRotas.patch("/", async (req, res) => {
     try {
-        // Atualiza o usuário pelo email
-        const usuarioAtualizado = await usuarioServices.atualizarUsuario(req.body.email, req.body.data);
+        // Atualiza o usuário pelo ID
+        const usuarioAtualizado = await usuarioServices.atualizarUsuario(req.body.idUsuario, req.body.data);
         // Se não for encontrado, retorna null
         if (!usuarioAtualizado) {
             return res.status(404).json(null);
@@ -53,16 +53,16 @@ usuarioRotas.patch("/", async (req, res) => {
         return res.status(200).json(usuarioAtualizado);
     }
     catch (erro) {
-        // Retorna vazio caso um erro aconteça
-        return res.status(500).json(null);
+        // Retorna o erro caso aconteça
+        return res.status(500).json(erro.message);
     }
 });
 
 // Rota para deletar um usuário
 usuarioRotas.delete("/", async (req, res) => {
     try {
-        // Deleta o usuário pelo email
-        const usuarioDeletado = await usuarioServices.deletarUsuario(req.body.email);
+        // Deleta o usuário pelo ID
+        const usuarioDeletado = await usuarioServices.deletarUsuario(req.body.idUsuario);
         // Se não for encontrado, retorna null
         if (!usuarioDeletado) {
             return res.status(404).json(null);
@@ -72,8 +72,8 @@ usuarioRotas.delete("/", async (req, res) => {
         return res.status(200).json(usuarioDeletado);
     }
     catch (erro) {
-        // Retorna vazio caso um erro aconteça
-        return res.status(500).json(null);
+        // Retorna o erro caso aconteça
+        return res.status(500).json(erro.message);
     }
 });
 
