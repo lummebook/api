@@ -1,6 +1,5 @@
 import UsuarioModel from "../models/usuario-model.js";
-import { hash } from "bcrypt";
-import usuarioRotas from "../routes/rotas-usuario.js";
+import { compare, hash } from "bcrypt";
 
 // Classe para veificar os dados e comunicar com o MongoDB
 export default class UsuarioServices {
@@ -18,9 +17,30 @@ export default class UsuarioServices {
         return usuario;
     }
 
-    // Função para retornar usuário por email
+    // Função para verificar o usuário
+    async verificarUsuario({email, senha}) {
+        // busca usuário pelo email
+        const usuario = await UsuarioModel.findOne({email}).lean();
+        // Se não existir, retorna null
+        if (!usuario) {
+            return null;
+        }
+
+        // Verifica se a senha digitada é igual a guardada
+        const sucesso = await compare(senha, usuario.senha);
+        // Se não for, retorna null
+        if (!sucesso) {
+            return null;
+        }
+
+        // Omite informações importantes
+        const {_id, __v, senhaUsuario, ...usuarioRetornado} = usuario;
+        return usuarioRetornado;
+    }
+
+    // Função para retornar usuário por ID
     async retornarUsuarioPorId(idUsuario) {
-        // Busca o usuário pelo email
+        // Busca o usuário pelo ID
         const usuario = await UsuarioModel.findOne({idUsuario}).lean();
         // Se o usuário não existir, retorna null
         if (!usuario) {
@@ -34,7 +54,7 @@ export default class UsuarioServices {
 
     // Função para atualizar usuário
     async atualizarUsuario(idUsuario, novaInfo) {
-        // Busca o usuário pelo email e atualiza se achar
+        // Busca o usuário pelo ID e atualiza se achar
         const novoUsuario = await UsuarioModel.findOneAndUpdate({idUsuario}, novaInfo, {new: true}).lean();
         // Se o usuário não existir, retorna null
         if (!novoUsuario) {
