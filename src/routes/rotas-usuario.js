@@ -15,7 +15,8 @@ usuarioRotas.post("/auth/cadastrar", async (req, res) => {
     } 
     // Caso um erro aconteça, cai no catch
     catch (erro) {
-        // Retorna o erro caso aconteça
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message)
         return res.status(500).json(erro.message);
     }
 });
@@ -36,7 +37,8 @@ usuarioRotas.post("/auth/conectar", async (req, res) => {
     } 
     // Caso um erro aconteça, cai no catch
     catch (erro) {
-        // Retorna o erro caso aconteça
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message)
         return res.status(500).json(erro.message);
     }
 });
@@ -55,7 +57,8 @@ usuarioRotas.get("/:idUsuario", async (req, res) => {
         return res.status(200).json(usuarioRetornado);
     }
     catch (erro) {
-        // Retorna o erro caso aconteça
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message)
         return res.status(500).json(erro.message);
     }
 });
@@ -74,7 +77,8 @@ usuarioRotas.patch("/:idUsuario", async (req, res) => {
         return res.status(200).json(usuarioAtualizado);
     }
     catch (erro) {
-        // Retorna o erro caso aconteça
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message)
         return res.status(500).json(erro.message);
     }
 });
@@ -93,7 +97,8 @@ usuarioRotas.delete("/:idUsuario", async (req, res) => {
         return res.status(200).json(usuarioDeletado);
     }
     catch (erro) {
-        // Retorna o erro caso aconteça
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message)
         return res.status(500).json(erro.message);
     }
 });

@@ -29,7 +29,6 @@ const schemaUsuario = new Schema({
     cpf: {
         type: String,
         required: false,
-        unique: true,
     },
 });
 
