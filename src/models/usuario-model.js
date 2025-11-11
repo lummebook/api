@@ -5,32 +5,26 @@ import { randomUUID } from 'crypto';
 const schemaUsuario = new Schema({
     idUsuario: {
         type: String, // Tipo 'string'
-        default: () => randomUUID() // ID gerado automaticamente
+        default: () => randomUUID() ,// ID gerado automaticamente
+        unique: true // Campo único
     },
     nome: {
-        type: String,
+        type: String, // Tipo 'string'
         required: true, // Campo obrigatório
     },
     email: {
-        type: String,
-        required: true,
+        type: String, // Tipo 'string'
+        required: true, // Campo obrigatório
         lowercase: true, // Deixa em minúsculas
         unique: true // Campo único
     },
     senha: {
-        type: String,
-        required: true,
+        type: String, // Tipo 'string'
+        required: true, // Campo obrigatório
         minLength: 8, // Oito caracteres mínimos
-    },
-    eVendedor: {
-        type: Boolean, // Tipo boolean
-        default: false // Valor padrão é 'false'
-    },
-    cpf: {
-        type: String,
-        required: false,
     },
 });
 
+// Exporta a ligação (model) para trabalhar com usuários
 const UsuarioModel = model("Usuario", schemaUsuario);
 export default UsuarioModel;

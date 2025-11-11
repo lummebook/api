@@ -5,6 +5,7 @@ import express from 'express';
 import conectarMongoDB from './database/mongo-db.js';
 import cors from 'cors';
 import usuarioRotas from './routes/rotas-usuario.js';
+import livroRotas from './routes/rotas-livro.js';
 
 async function main () {
     await conectarMongoDB(); // Conecta com o MongoDB
@@ -16,6 +17,7 @@ async function main () {
 
     // Configurações das rotas
     app.use("/usuarios", usuarioRotas);
+    app.use("/livros", livroRotas);
 
     // Inicia o servidor
     app.listen(8080, () => console.log("Server iniciado na porta 8080."));

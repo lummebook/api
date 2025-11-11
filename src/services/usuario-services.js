@@ -21,14 +21,14 @@ export default class UsuarioServices {
     async verificarUsuario({email, senha}) {
         // busca usuário pelo email
         const usuario = await UsuarioModel.findOne({email}).lean();
-        // Se não existir, retorna null
+        // Se o usuário não existir, retorna 'null'
         if (!usuario) {
             return null;
         }
 
         // Verifica se a senha digitada é igual a guardada
         const sucesso = await compare(senha, usuario.senha);
-        // Se não for, retorna null
+        // Se não for, retorna 'null'
         if (!sucesso) {
             return null;
         }
@@ -42,7 +42,7 @@ export default class UsuarioServices {
     async retornarUsuarioPorId(idUsuario) {
         // Busca o usuário pelo ID
         const usuario = await UsuarioModel.findOne({idUsuario}).lean();
-        // Se o usuário não existir, retorna null
+        // Se o usuário não existir, retorna 'null'
         if (!usuario) {
             return null;
         }
@@ -55,14 +55,14 @@ export default class UsuarioServices {
     // Função para atualizar usuário
     async atualizarUsuario(idUsuario, novaInfo) {
         // Busca o usuário pelo ID e atualiza se achar
-        const novoUsuario = await UsuarioModel.findOneAndUpdate({idUsuario}, novaInfo, {new: true}).lean();
-        // Se o usuário não existir, retorna null
-        if (!novoUsuario) {
+        const usuarioNovo = await UsuarioModel.findOneAndUpdate({idUsuario}, novaInfo, {new: true}).lean();
+        // Se o usuário não existir, retorna 'null'
+        if (!usuarioNovo) {
             return null
         }
 
         // Omite informações importantes
-        const {_id, __v, senha, ...usuarioRetornado} = novoUsuario;
+        const {_id, __v, senha, ...usuarioRetornado} = usuarioNovo;
         return usuarioRetornado;
     }
 
@@ -70,7 +70,7 @@ export default class UsuarioServices {
     async deletarUsuario (idUsuario) {
         // Busca o usuário pelo ID e deleta se achar
         const usuarioDeletado = await UsuarioModel.findOneAndDelete({idUsuario}).lean();
-        // Se o usuário não existir, retorna null
+        // Se o usuário não existir, retorna 'null'
         if (!usuarioDeletado) {
             return null
         }
