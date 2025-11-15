@@ -5,7 +5,7 @@ export default class LivroServices {
     async criarLivro(infoLivro) {
         // Se 'quantidade' não for inteira, retorna erro
         if (!Number.isInteger(infoLivro.quantidade)) {
-            throw new Error("Dados inválidos inseridos");
+            throw new Error("Dados inválidos inseridos.");
         }
 
         // Retorna o livro criado, omitindo informações importantes
@@ -18,7 +18,7 @@ export default class LivroServices {
     // Função para retornar o livro pelo ID
     async retornarLivroPorID(idLivro) {
         // Busca o livro pelo ID
-        const livro = LivroModel.findOne({ idLivro }).lean();
+        const livro = await LivroModel.findOne({ idLivro }).lean();
 
         // Se o livro não existir, retorna 'null'
         if (!livro) {
@@ -30,6 +30,16 @@ export default class LivroServices {
         return livroRetornado;
     }
 
+    // Função para retornar todos os livros registrados
+    async retornarLivrosRegistrados() {
+        // Busca o livro pelo ID
+        const livros = await LivroModel.find({}).lean();
+
+        // Omiti informações importantes e retorna o livro
+        const livrosRegistrados = livros.map(({ _id, __v, ...livro }) => livro);
+        return livrosRegistrados;
+    }
+
     // Função para atualizar o livro pelo ID
     async atualizarLivro(idLivro, novaInfo) {
         // Se 'quantidade' não for inteira, retorna erro
@@ -38,9 +48,13 @@ export default class LivroServices {
         }
 
         // Atualiza o livro pelo ID e atualiza se achar
-        const livroAtualizado = LivroModel.findOneAndUpdate({ idLivro }, novaInfo, {
-            new: true,
-        }).lean();
+        const livroAtualizado = await LivroModel.findOneAndUpdate(
+            { idLivro },
+            novaInfo,
+            {
+                new: true,
+            }
+        ).lean();
 
         // Se o livro não existir, retorna 'null'
         if (!livroAtualizado) {
@@ -55,7 +69,9 @@ export default class LivroServices {
     // Função para deletar o livro pelo ID
     async deletarLivro(idLivro) {
         // Deleta o livro pelo ID
-        const livroDeletado = LivroModel.findOneAndUpdate({ idLivro }).lean();
+        const livroDeletado = await LivroModel.findOneAndUpdate({
+            idLivro,
+        }).lean();
 
         // Se o livro não existir, retorna 'null'
         if (!livroDeletado) {

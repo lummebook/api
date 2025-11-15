@@ -27,7 +27,7 @@ const livroSchema = new Schema({
         min: 0 // Valor mínimo
     },
     idVendedor: {
-        type: Schema.Types.ObjectId, // Tipo 'ObjectId'
+        type: String, // Tipo 'string'
         required: true, // Campo obrigatório
     },
 }); 

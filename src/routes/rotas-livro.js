@@ -46,6 +46,23 @@ livroRotas.get("/:idLivro", async (req, res) => {
     }
 });
 
+// Rota para retornar todos os livros registrados
+livroRotas.get("/", async (req, res) => {
+    // Tenta executar o retorno dos livros registrados no 'try',
+    // Caso um erro aconteça, cai no 'catch'
+    try {
+        // Retorna todos os livros
+        const livrosRegistrados = await livroServices.retornarLivrosRegistrados();
+
+        // Retorna os livros registrados 
+        return res.status(200).json(livrosRegistrados);
+    } catch (erro) {
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message);
+        return res.status(500).json(erro.message);
+    }
+});
+
 // Rota para atualizar um livro por ID
 livroRotas.patch("/:idLivro", async (req, res) => {
     // Tenta executar a atualização do livro no 'try',
