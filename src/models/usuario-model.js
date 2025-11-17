@@ -23,6 +23,10 @@ const schemaUsuario = new Schema({
         required: true, // Campo obrigatório
         minLength: 8, // Oito caracteres mínimos
     },
+    carrinho: {
+        type: [String], // Tipo de array de 'string'
+        default: [],
+    }
 });
 
 // Exporta a ligação (model) para trabalhar com usuários
