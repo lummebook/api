@@ -10,6 +10,7 @@ import livroRotas from './routes/rotas-livro.js';
 async function main () {
     await conectarMongoDB(); // Conecta com o MongoDB
     const app = express(); // Inicia o servidor
+    const PORT = process.env.PORT | 8080;
 
     // Configurações do servidor
     app.use(express.json());
@@ -20,7 +21,7 @@ async function main () {
     app.use("/livros", livroRotas);
 
     // Inicia o servidor
-    app.listen(8080, () => console.log("Server iniciado na porta 8080."));
+    app.listen(PORT, () => console.log(`Server iniciado na porta ${PORT}.`));
 }
 
 main();
