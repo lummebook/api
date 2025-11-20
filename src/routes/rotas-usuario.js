@@ -76,18 +76,20 @@ usuarioRotas.post("/:idUsuario/carrinho", async (req, res) => {
     // Caso um erro aconteça, cai no 'catch'
     try {
         // Adiciona o livro ao carrinho
-        const usuarioAtualizado = await usuarioServices.adicionarLivroAoCarrinho(
+        const resposta = await usuarioServices.adicionarLivroAoCarrinho(
             req.params.idUsuario,
             req.body.idLivro
         );
 
-        // Se não for encontrado, retorna null
-        if (!usuarioAtualizado) {
-            return res.status(404).json(null);
+        if (resposta.erro === "usuario_inexistente") {
+            return res.status(404).json({erro: "usuario_inexistente"});
+        }
+        else if (resposta.erro === "livro_registrado") {
+            return res.status(422).json({erro: "livro_registrado"})
         }
 
         // Retorna o usuário atualizado
-        return res.status(200).json(usuarioAtualizado);
+        return res.status(200).json(resposta);
     } catch (erro) {
         // Mostra e retorna o erro caso aconteça
         console.log(erro.message);
