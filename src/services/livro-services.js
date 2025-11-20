@@ -40,6 +40,16 @@ export default class LivroServices {
         return livrosRegistrados;
     }
 
+    // Função para retornar todos os livros do usuário
+    async retornarLivrosDoUsuario(idUsuario) {
+        // Busca os livros pelo ID do usuário
+        const livros = await LivroModel.find({idVendedor: idUsuario}).lean();
+
+        // Omiti informações importantes e retorna o livro
+        const livrosRegistrados = livros.map(({ _id, __v, ...livro }) => livro);
+        return livrosRegistrados;
+    }
+
     // Função para atualizar o livro pelo ID
     async atualizarLivro(idLivro, novaInfo) {
         // Se 'quantidade' não for inteira, retorna erro
