@@ -55,20 +55,27 @@ export default class UsuarioServices {
 
     // Função para adicionar um livro no carrinho
     async adicionarLivroAoCarrinho(idUsuario, idLivro) {
-        // Busca o usuário pelo ID e atualiza o carrinho
-        const usuarioAtualizado = await UsuarioModel.findOneAndUpdate(
-            { idUsuario, carrinho: { $ne: idLivro } },
-            { $push: { carrinho: idLivro } },
-            { new: true }
-        ).lean();
+        // Busca o usuário pelo ID
+        const usuario = await UsuarioModel.findOne({
+            idUsuario,
+        });
 
-        // Se o usuário não existir, retorna 'null'
-        if (!usuarioAtualizado) {
-            return null;
+        // Se o usuário não existir, retorna erro
+        if (!usuario) {
+            return { erro: "usuario_inexistente" };
         }
 
+        // Se o livro já estiver no carrinho, retorna erro
+        if (usuario.carrinho.includes(idLivro)) {
+            return { erro: "livro_registrado" };
+        }
+
+        // Salva o livro no carrinho
+        usuario.carrinho.push(idLivro);
+        const usuarioAtualizado = await usuario.save();
+
         // Omite informações importantes
-        const { _id, __v, senha, ...usuarioRetornado } = usuarioAtualizado;
+        const { _id, __v, senha, ...usuarioRetornado } = usuarioAtualizado.toObject();
         return usuarioRetornado;
     }
 
