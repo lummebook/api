@@ -63,6 +63,29 @@ livroRotas.get("/", async (req, res) => {
     }
 });
 
+livroRotas.get("/usuario/:idUsuario", async (req, res) => {
+    // Tenta executar o retorno dos livros no 'try',
+    // Caso um erro aconteça, cai no 'catch'
+    try {
+        // Retorna os livros pelo ID do usuário
+        const livrosRetornados = await livroServices.retornarLivrosDoUsuario(
+            req.params.idUsuario,
+        );
+
+        // Se o usuário não existir, retorna 'null'
+        if (!livrosRetornados) {
+            return res.status(404).json(null);
+        }
+
+        // Retorna o livro 
+        return res.status(200).json(livrosRetornados);
+    } catch (erro) {
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message);
+        return res.status(500).json(erro.message);
+    }
+});
+
 // Rota para atualizar um livro por ID
 livroRotas.patch("/:idLivro", async (req, res) => {
     // Tenta executar a atualização do livro no 'try',
@@ -105,29 +128,6 @@ livroRotas.delete("/:idLivro", async (req, res) => {
 
         // Retorna o livro 
         return res.status(200).json(livroDeletado);
-    } catch (erro) {
-        // Mostra e retorna o erro caso aconteça
-        console.log(erro.message);
-        return res.status(500).json(erro.message);
-    }
-});
-
-livroRotas.get("/usuarios/:idUsuario", async (req, res) => {
-    // Tenta executar o retorno dos livros no 'try',
-    // Caso um erro aconteça, cai no 'catch'
-    try {
-        // Retorna os livros pelo ID do usuário
-        const livrosRetornados = await livroServices.retornarLivrosDoUsuario(
-            req.params.idUsuario,
-        );
-
-        // Se o usuário não existir, retorna 'null'
-        if (!livrosRetornados) {
-            return res.status(404).json(null);
-        }
-
-        // Retorna o livro 
-        return res.status(200).json(livrosRetornados);
     } catch (erro) {
         // Mostra e retorna o erro caso aconteça
         console.log(erro.message);
