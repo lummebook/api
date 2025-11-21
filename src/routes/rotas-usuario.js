@@ -34,7 +34,7 @@ usuarioRotas.post("/auth/conectar", async (req, res) => {
 
         // Se der errado, retorna null
         if (!usuarioVerificado) {
-            return res.status(400).json(null);
+            return res.status(422).json(null);
         }
 
         // Retorna o usuário verificado
