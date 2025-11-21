@@ -79,7 +79,7 @@ export default class LivroServices {
     // Função para deletar o livro pelo ID
     async deletarLivro(idLivro) {
         // Deleta o livro pelo ID
-        const livroDeletado = await LivroModel.findOneAndUpdate({
+        const livroDeletado = await LivroModel.findOneAndDelete({
             idLivro,
         }).lean();
 
