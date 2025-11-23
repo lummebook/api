@@ -82,10 +82,9 @@ usuarioRotas.post("/:idUsuario/carrinho", async (req, res) => {
         );
 
         if (resposta.erro === "usuario_inexistente") {
-            return res.status(404).json({erro: "usuario_inexistente"});
-        }
-        else if (resposta.erro === "livro_registrado") {
-            return res.status(422).json({erro: "livro_registrado"})
+            return res.status(404).json({ erro: "usuario_inexistente" });
+        } else if (resposta.erro === "livro_registrado") {
+            return res.status(422).json({ erro: "livro_registrado" });
         }
 
         // Retorna o usuário atualizado
@@ -97,15 +96,40 @@ usuarioRotas.post("/:idUsuario/carrinho", async (req, res) => {
     }
 });
 
-// Rota para remover um livro ao carrinho
+// Rota para remover um livro do carrinho
 usuarioRotas.delete("/:idUsuario/carrinho", async (req, res) => {
-    // Tenta executar a remoção do livro do carrinho no 'try',
+    // Tenta executar a remoção dos livros do carrinho no 'try',
     // Caso um erro aconteça, cai no 'catch'
     try {
-        // Remove o livro ao carrinho
+        // Remove os livros do carrinho
         const usuarioAtualizado = await usuarioServices.removerLivroDoCarrinho(
             req.params.idUsuario,
             req.body.idLivro
+        );
+
+        // Se não for encontrado, retorna null
+        if (!usuarioAtualizado) {
+            return res.status(404).json(null);
+        }
+
+        // Retorna o usuário atualizado
+        return res.status(200).json(usuarioAtualizado);
+    } catch (erro) {
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message);
+        return res.status(500).json(erro.message);
+    }
+});
+
+// Rota para efetuar a compra dos livros
+usuarioRotas.patch("/:idUsuario/compra", async (req, res) => {
+    // Tenta executar a compra dos livros no 'try',
+    // Caso um erro aconteça, cai no 'catch'
+    try {
+        // Efetua a compra (remove os livros do carrinho e diminui suas quantidades)
+        const usuarioAtualizado = await usuarioServices.efetuarCompra(
+            req.params.idUsuario,
+            req.body.idLivrosArray
         );
 
         // Se não for encontrado, retorna null

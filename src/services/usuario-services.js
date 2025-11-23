@@ -1,6 +1,7 @@
 import UsuarioModel from "../models/usuario-model.js";
 import LivroModel from "../models/livro-model.js";
 import { compare, hash } from "bcrypt";
+import LivroServices from "./livro-services.js";
 
 // Classe para veificar os dados e comunicar com o MongoDB
 export default class UsuarioServices {
@@ -21,7 +22,11 @@ export default class UsuarioServices {
     // Função para verificar o usuário
     async verificarUsuario({ email, senha }) {
         // busca usuário pelo email
-        const usuario = await UsuarioModel.findOne({ email }).lean();
+        const usuario = await UsuarioModel.findOne(
+            { email },
+            { _id: 0, __v: 0 }
+        ).lean();
+
         // Se o usuário não existir, retorna 'null'
         if (!usuario) {
             return null;
@@ -35,30 +40,29 @@ export default class UsuarioServices {
         }
 
         // Omite informações importantes
-        const { _id, __v, senhaUsuario, ...usuarioRetornado } = usuario;
-        return usuarioRetornado;
+        const { senha: _senhaOmitida, ...usuarioVerificado } = usuario;
+        return usuarioVerificado;
     }
 
     // Função para retornar usuário por ID
     async retornarUsuarioPorId(idUsuario) {
         // Busca o usuário pelo ID
-        const usuario = await UsuarioModel.findOne({ idUsuario }).lean();
-        // Se o usuário não existir, retorna 'null'
-        if (!usuario) {
-            return null;
-        }
+        const usuario = await UsuarioModel.findOne(
+            { idUsuario },
+            { _id: 0, __v: 0, senha: 0 }
+        ).lean();
 
-        // Omite informações importantes
-        const { _id, __v, senha, ...usuarioRetornado } = usuario;
-        return usuarioRetornado;
+        return usuario;
     }
 
     // Função para adicionar um livro no carrinho
     async adicionarLivroAoCarrinho(idUsuario, idLivro) {
         // Busca o usuário pelo ID
-        const usuario = await UsuarioModel.findOne({
-            idUsuario,
-        });
+        const usuario = await UsuarioModel.findOne(
+            {
+                idUsuario,
+            },
+        );
 
         // Se o usuário não existir, retorna erro
         if (!usuario) {
@@ -72,11 +76,10 @@ export default class UsuarioServices {
 
         // Salva o livro no carrinho
         usuario.carrinho.push(idLivro);
-        const usuarioAtualizado = await usuario.save();
+        const usuarioSalvo = await usuario.save();
+        const { _id, __v, senha, ...usuarioAtualizado } = usuarioSalvo.toObject();
 
-        // Omite informações importantes
-        const { _id, __v, senha, ...usuarioRetornado } = usuarioAtualizado.toObject();
-        return usuarioRetornado;
+        return usuarioAtualizado;
     }
 
     // Função para remover um livro do carrinho
@@ -84,24 +87,36 @@ export default class UsuarioServices {
         // Busca o usuário pelo ID e atualiza o carrinho
         const usuarioAtualizado = await UsuarioModel.findOneAndUpdate(
             { idUsuario },
-            { $pull: { carrinho: idLivro } },
-            { new: true }
+            {
+                $pull: { carrinho: idLivro },
+            },
+            { new: true, select: { _id: 0, __v: 0, senha: 0 } }
         ).lean();
 
         // Se o usuário não existir, retornar 'null'
-        if (!usuarioAtualizado) {
-            return null;
-        }
+        return usuarioAtualizado;
+    }
 
-        // Omite informações importantes
-        const { _id, __v, senha, ...usuarioRetornado } = usuarioAtualizado;
-        return usuarioRetornado;
+    async efetuarCompra (idUsuario, idLivrosArray) {
+        const livroServices = new LivroServices();
+        await livroServices.efetuarCompra(idLivrosArray);
+
+        const usuarioAtualizado = await UsuarioModel.findOneAndUpdate(
+            { idUsuario },
+            { $pullAll: { carrinho: idLivrosArray } },
+            { new: true, select: { _id: 0, __v: 0, senha: 0 } }
+        ).lean();
+
+        return usuarioAtualizado;
     }
 
     // Função para retornar todos os livros do carrinho do usuário
     async retornarLivrosDoCarrinho(idUsuario) {
         // Busca o usuário pelo ID
-        const usuario = await UsuarioModel.findOne({ idUsuario }).lean();
+        const usuario = await UsuarioModel.findOne(
+            { idUsuario },
+            { _id: 0, __v: 0, senha: 0 }
+        ).lean();
 
         // Se o usuário não existir, retorna 'null'
         if (!usuario) {
@@ -109,11 +124,12 @@ export default class UsuarioServices {
         }
 
         // Retornar apenas os IDs dos livros
-        const livros = await LivroModel.find({
-            idLivro: { $in: usuario.carrinho },
-        }).lean();
-        const livrosRetornados = livros.map(({ _id, __v, ...livro }) => livro);
-        return livrosRetornados;
+        const livros = await LivroModel.find(
+            {
+                idLivro: { $in: usuario.carrinho },
+            },
+        ).lean();
+        return livros.map(({idLivro}) => idLivro);
     }
 
     // Função para atualizar usuário
@@ -122,31 +138,22 @@ export default class UsuarioServices {
         const usuarioNovo = await UsuarioModel.findOneAndUpdate(
             { idUsuario },
             novaInfo,
-            { new: true }
+            { new: true, select: { _id: 0, __v: 0, senha: 0 } }
         ).lean();
-        // Se o usuário não existir, retorna 'null'
-        if (!usuarioNovo) {
-            return null;
-        }
 
-        // Omite informações importantes
-        const { _id, __v, senha, ...usuarioRetornado } = usuarioNovo;
-        return usuarioRetornado;
+        return usuarioNovo;
     }
 
     // Função para deletar usuário
     async deletarUsuario(idUsuario) {
         // Busca o usuário pelo ID e deleta se achar
-        const usuarioDeletado = await UsuarioModel.findOneAndDelete({
-            idUsuario,
-        }).lean();
-        // Se o usuário não existir, retorna 'null'
-        if (!usuarioDeletado) {
-            return null;
-        }
+        const usuarioDeletado = await UsuarioModel.findOneAndDelete(
+            {
+                idUsuario,
+            },
+            { select: { _id: 0, __v: 0, senha: 0 } }
+        ).lean();
 
-        // Omite informações importantes
-        const { _id, __v, senha, ...usuarioRetornado } = usuarioDeletado;
-        return usuarioRetornado;
+        return usuarioDeletado;
     }
 }
