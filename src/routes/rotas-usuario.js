@@ -52,17 +52,17 @@ usuarioRotas.get("/:idUsuario/carrinho", async (req, res) => {
     // Caso um erro aconteça, cai no 'catch'
     try {
         // Procura os livros do carrinho
-        const idsRetornados = await usuarioServices.retornarLivrosDoCarrinho(
+        const livrosRetornados = await usuarioServices.retornarLivrosDoCarrinho(
             req.params.idUsuario
         );
 
         // Se não for encontrado, retorna null
-        if (!idsRetornados) {
+        if (!livrosRetornados) {
             return res.status(404).json(null);
         }
 
         // Retorna os livros do carrinho encontrado
-        return res.status(200).json(idsRetornados);
+        return res.status(200).json(livrosRetornados);
     } catch (erro) {
         // Mostra e retorna o erro caso aconteça
         console.log(erro.message);

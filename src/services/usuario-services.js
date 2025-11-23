@@ -123,13 +123,14 @@ export default class UsuarioServices {
             return null;
         }
 
-        // Retornar apenas os IDs dos livros
+        // Retornar apenas os livros
         const livros = await LivroModel.find(
             {
                 idLivro: { $in: usuario.carrinho },
             },
+            {_id: 0, __v: 0}
         ).lean();
-        return livros.map(({idLivro}) => idLivro);
+        return livros;
     }
 
     // Função para atualizar usuário
