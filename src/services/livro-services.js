@@ -18,36 +18,25 @@ export default class LivroServices {
     // Função para retornar o livro pelo ID
     async retornarLivroPorID(idLivro) {
         // Busca o livro pelo ID
-        const livro = await LivroModel.findOne({ idLivro }).lean();
-
-        // Se o livro não existir, retorna 'null'
-        if (!livro) {
-            return null;
-        }
-
-        // Omiti informações importantes e retorna o livro
-        const { _id, __v, ...livroRetornado } = livro;
-        return livroRetornado;
+        const livro = await LivroModel.findOne({ idLivro }, { _id: 0, __v: 0 }).lean();
+        
+        return livro
     }
 
     // Função para retornar todos os livros registrados
     async retornarLivrosRegistrados() {
-        // Busca o livro pelo ID
-        const livros = await LivroModel.find({}).lean();
-
-        // Omiti informações importantes e retorna o livro
-        const livrosRegistrados = livros.map(({ _id, __v, ...livro }) => livro);
+        // Buscas os livros registrados
+        const livrosRegistrados = await LivroModel.find({}, { _id: 0, __v: 0 }).lean();
+        
         return livrosRegistrados;
     }
 
     // Função para retornar todos os livros do usuário
     async retornarLivrosDoUsuario(idUsuario) {
         // Busca os livros pelo ID do usuário
-        const livros = await LivroModel.find({idVendedor: idUsuario}).lean();
-
-        // Omiti informações importantes e retorna o livro
-        const livrosRegistrados = livros.map(({ _id, __v, ...livro }) => livro);
-        return livrosRegistrados;
+        const livros = await LivroModel.find({ idVendedor: idUsuario }, { _id: 0, __v: 0 }).lean();
+        
+        return livros;
     }
 
     // Função para atualizar o livro pelo ID
@@ -74,6 +63,19 @@ export default class LivroServices {
         // Omiti informações importantes e retorna o livro
         const { _id, __v, ...livroRetornado } = livroAtualizado;
         return livroRetornado;
+    }
+
+    // Função para efetuar a compra dos livros
+    async efetuarCompra (idLivrosArray) {
+        // Atualiza a quantidade
+        await LivroModel.updateMany(
+            { idLivro: { $in: idLivrosArray } },
+            { $inc: { quantidade: -1 } },
+            { new: true }
+        ).lean();
+
+        const livrosAtualizados = await LivroModel.find({ idLivro: { $in: idLivrosArray } }, { _id: 0, __v: 0 }).lean();
+        return livrosAtualizados;
     }
 
     // Função para deletar o livro pelo ID

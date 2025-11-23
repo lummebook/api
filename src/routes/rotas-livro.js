@@ -111,6 +111,25 @@ livroRotas.patch("/:idLivro", async (req, res) => {
     }
 });
 
+// Rota para efetuar compra dos livros
+livroRotas.patch("/", async (req, res) => {
+    // Tenta executar a atualização dos livros no 'try',
+    // Caso um erro aconteça, cai no 'catch'
+    try {
+        // Atualiza a quantidade de cada livro comprado
+        const livrosAtualizados = await livroServices.efetuarCompra(
+            req.body.idLivrosArray,
+        );
+
+        // Retorna os livros 
+        return res.status(200).json(livrosAtualizados);
+    } catch (erro) {
+        // Mostra e retorna o erro caso aconteça
+        console.log(erro.message);
+        return res.status(500).json(erro.message);
+    }
+});
+
 // Rota para deletar um livro por ID
 livroRotas.delete("/:idLivro", async (req, res) => {
     // Tenta executar a remoção do livro no 'try',
